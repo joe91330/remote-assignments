@@ -4,7 +4,6 @@ const url = "https://ec2-54-64-246-136.ap-northeast-1.compute.amazonaws.com/dela
 
 function requestCallback(url, callback) {
   const startTime = Date.now(); 
-
   // 使用 https 發送請求
   const req = https.get(url, (res) => {
     let data = '';
@@ -53,10 +52,8 @@ function requestPromise(url) {
     req.end();
   });
 }
-
 async function requestAsyncAwait(url) {
   const startTime = Date.now(); 
-
   try {
     const data = await requestPromise(url);
     const endTime = Date.now(); 
