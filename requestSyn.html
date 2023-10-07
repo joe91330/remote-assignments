@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Your Web Page Title</title>
+  </head>
+  <body>
+    <!-- Your JavaScript code goes here -->
+    <script>
+      var request = new XMLHttpRequest();
+      request.open("GET", "http://www.mozilla.org/", false);
+      request.send(null);
+      if (request.status === 200) {
+        console.log(request.responseText);
+      }
+    </script>
+  </body>
+</html>

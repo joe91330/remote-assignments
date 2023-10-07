@@ -63,19 +63,19 @@ async function requestAsyncAwait(url) {
     console.error(error);
   }
 }
+requestCallback(url, (data, duration) => {
+  console.log(`Callback: Duration: ${duration} milliseconds`);
+});
+const promiseResult =  requestPromise(url);
 
-async function main() {
-  // 使用 callback 方式
-  requestCallback(url, (data, duration) => {
-    console.log(`Callback: Duration: ${duration} milliseconds`);
-  });
+promiseResult
+.then(({ data, duration }) => {
+  console.log(`Promise: Duration: ${duration} milliseconds`);
+})
+.catch((error) => {
+  console.error(error);
+});
 
-  // 使用 Promise 方式
-  const promiseResult = await requestPromise(url);
-  console.log(`Promise: Duration: ${promiseResult.duration} milliseconds`);
+requestAsyncAwait(url);
 
-  // 使用 async/await 方式
-  await requestAsyncAwait(url);
-}
 
-main();
