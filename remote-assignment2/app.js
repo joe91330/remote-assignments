@@ -30,7 +30,7 @@ db.connect((err) => {
   }
 });
 
-// app.use(bodyParser.json());
+app.use(express.json());
 // app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
@@ -60,13 +60,13 @@ app.post("/users", (req, res) => {
   const usernameRegex = /^[a-zA-Z0-9_-]+$/;
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-  if (
-    !usernameRegex.test(name) ||
-    !emailRegex.test(email) ||
-    !validatePassword(password)
-  ) {
-    return res.status(400).json({ error: "Invalid input data" });
-  }
+//   if (
+//     !usernameRegex.test(name) ||
+//     !emailRegex.test(email) ||
+//     !validatePassword(password)
+//   ) {
+//     return res.status(400).json({ error: "Invalid input data" });
+//   }
 
 // email是否存在
   const checkEmailSql =
