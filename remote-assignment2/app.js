@@ -138,5 +138,3 @@ app.get("/users/:id", (req, res) => {
       return res.status(200).json(responseData);
     });
   });
-  
-
