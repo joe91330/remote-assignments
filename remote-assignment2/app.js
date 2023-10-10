@@ -1,24 +1,22 @@
 const express = require("express");
-const mysql = require("mysql2");
 const app = express();
+const mysql = require("mysql2");
 const port = 3000;
+app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
+// app.get("/", (req, res) => {
+//   res.send("Hello World!");
+// });
 
-app.get("/healthcheck", (req, res) => {
-  res.send("OK!");
-});
+// app.get("/healthcheck", (req, res) => {
+//   res.send("OK!");
+// });
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
-});
 
 const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "joe10277",
+  host: "assignment.cajemge1hozc.ap-southeast-2.rds.amazonaws.com",
+  user: "joe10277",
+  password: "joe91330",
   database: "assignment",
 });
 
@@ -30,16 +28,12 @@ db.connect((err) => {
   }
 });
 
-app.use(express.json());
-// app.use(bodyParser.urlencoded({ extended: true }));
-
-app.use((req, res, next) => {
-  res.setHeader("Content-Type", "application/json");
-
-  const requestDate = new Date().toUTCString();
-  res.setHeader("Request-Date", requestDate);
-  next();
-});
+// app.use((req, res, next) => {
+//   res.setHeader("Content-Type", "application/json");
+//   const requestDate = new Date().toUTCString();
+//   res.setHeader("Request-Date", requestDate);
+//   next();
+// });
 
 function validatePassword(password) {
   const hasUpperCase = /[A-Z]/.test(password);
@@ -55,20 +49,21 @@ function validatePassword(password) {
   return ruleCount >= 3;
 }
 app.post("/users", (req, res) => {
+  console.log("req.body", req.body);
   const { name, email, password } = req.body;
-
+  console.log("name",name, email, password);
   const usernameRegex = /^[a-zA-Z0-9_-]+$/;
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-//   if (
-//     !usernameRegex.test(name) ||
-//     !emailRegex.test(email) ||
-//     !validatePassword(password)
-//   ) {
-//     return res.status(400).json({ error: "Invalid input data" });
-//   }
+  //   if (
+  //     !usernameRegex.test(name) ||
+  //     !emailRegex.test(email) ||
+  //     !validatePassword(password)
+  //   ) {
+  //     return res.status(400).json({ error: "Invalid input data" });
+  //   }
 
-// email是否存在
+  // email是否存在
   const checkEmailSql =
     "SELECT COUNT(*) AS emailCount FROM user WHERE email = ?";
   db.query(checkEmailSql, [email], (err, result) => {
@@ -82,7 +77,8 @@ app.post("/users", (req, res) => {
     }
   });
 
-  const sql = "INSERT INTO user (name, email, password) VALUES (?, ?, ?)";
+  const sql =
+    "INSERT INTO user (name, email, password) VALUES (?, ?, ?)";
   db.query(sql, [name, email, password], (err, result) => {
     if (err) {
       console.error("Database query error:", err);
@@ -110,31 +106,37 @@ app.post("/users", (req, res) => {
 });
 
 app.get("/users/:id", (req, res) => {
-    const userId = req.params.id;
-  
-    const sql = "SELECT * FROM user WHERE id = ?";
-    db.query(sql, [userId], (err, result) => {
-      if (err) {
-        console.error("Database query error:", err);
-        return res.status(500).json({ error: "Error querying data from the database" });
-      }
-  
-      if (result.length === 0) {
-        return res.status(403).json({ error: "User not found" });
-      }
-  
-      const requestDate = new Date().toUTCString()
-      const responseData = {
-        data: {
-          user: {
-            id: result[0].id,
-            name: result[0].name,
-            email: result[0].email,
-          },
-          'request-date': requestDate,
+  const userId = req.params.id;
+
+  const sql = "SELECT * FROM user WHERE id = ?";
+  db.query(sql, [userId], (err, result) => {
+    if (err) {
+      console.error("Database query error:", err);
+      return res
+        .status(500)
+        .json({ error: "Error querying data from the database" });
+    }
+
+    if (result.length === 0) {
+      return res.status(403).json({ error: "User not found" });
+    }
+
+    const requestDate = new Date().toUTCString();
+    const responseData = {
+      data: {
+        user: {
+          id: result[0].id,
+          name: result[0].name,
+          email: result[0].email,
         },
-      };
-  
-      return res.status(200).json(responseData);
-    });
+        "request-date": requestDate,
+      },
+    };
+
+    return res.status(200).json(responseData);
+  });
+});
+
+app.listen(port, () => {
+    console.log(`Example app listening on port ${port}`);
   });
