@@ -51,17 +51,19 @@ function validatePassword(password) {
 app.post("/users", (req, res) => {
   console.log("req.body", req.body);
   const { name, email, password } = req.body;
+  const requestDate = req.get("request-date");
+
   console.log("name",name, email, password);
   const usernameRegex = /^[a-zA-Z0-9_-]+$/;
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-  //   if (
-  //     !usernameRegex.test(name) ||
-  //     !emailRegex.test(email) ||
-  //     !validatePassword(password)
-  //   ) {
-  //     return res.status(400).json({ error: "Invalid input data" });
-  //   }
+    if (
+      !usernameRegex.test(name) ||
+      !emailRegex.test(email) ||
+      !validatePassword(password)
+    ) {
+      return res.status(400).json({ error: "Invalid input data" });
+    }
 
   // email是否存在
   const checkEmailSql =
@@ -86,7 +88,6 @@ app.post("/users", (req, res) => {
     }
 
     if (result.affectedRows === 1) {
-      const requestDate = new Date().toUTCString();
       const responseData = {
         data: {
           user: {
@@ -107,7 +108,7 @@ app.post("/users", (req, res) => {
 
 app.get("/users/:id", (req, res) => {
   const userId = req.params.id;
-
+  const requestDate = req.get("request-date");
   const sql = "SELECT * FROM user WHERE id = ?";
   db.query(sql, [userId], (err, result) => {
     if (err) {
@@ -120,8 +121,6 @@ app.get("/users/:id", (req, res) => {
     if (result.length === 0) {
       return res.status(403).json({ error: "User not found" });
     }
-
-    const requestDate = new Date().toUTCString();
     const responseData = {
       data: {
         user: {
